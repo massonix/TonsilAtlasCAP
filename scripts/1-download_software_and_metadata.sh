@@ -20,10 +20,14 @@ wget -O data/cell_hashing_metadata.csv "$URL_HASHING_METADATA"
 
 
 # Download cellranger 8.0.1
-curl -o cellranger-8.0.1.tar.gz "https://cf.10xgenomics.com/releases/cell-exp/cellranger-8.0.1.tar.gz?Expires=1717561298&Key-Pair-Id=APKAI7S6A5RYOXBWRPDA&Signature=iZkk2k4-4RDbLSuDzbjBzW4C71N2TvyPy0NTYq1l9T2SxqMNeGtLiNuVE9O12OY72G~DStTUjQwB4oa1sawTbO0eOoiXK0SpM8lNuHJYdhhsP~sgmLfSVDJHfMNm0gyWBTx0sjv~A22sHtZ1Tdpp369z9vnbzZbvpLmrP7XYPvfyGMa98DWsRXSABVHAFMrJiuuyWU2JmooG-fbNA4Gs6BhLy9YbFqm-bhcR6znfKtQm76PqmB0M1Y22BioPgh1UHCp85Q1uDN5Pel73zhgDuac0Xz7Ri~AkLD1Tz3Z0ZX37gIFajH5-nCyLpak83UF9ViMfnb3~mo8lDQ4aMkLlbw__"
+curl -o cellranger-8.0.1.tar.gz "https://cf.10xgenomics.com/releases/cell-exp/cellranger-8.0.1.tar.gz?Expires=1718237417&Key-Pair-Id=APKAI7S6A5RYOXBWRPDA&Signature=AMa6fcmGxE75OTXN1NjrhWXg7Z8Nca9SqWPKKdvQYVdLhghySrqK~-ZRgHUVHMOaN2UewOPzwPL~5ioMZWqlfnfZOsYM1476QlZQcfpvoXxwTWcknrnTxwG2UlvktUUy79Aham2oUNZJqiTcTNsIRoH9GmnZFu41uDPpFXvJIfyGcLBvlijpvQ4xAPOn2rY-gzq49lcqG4gK6TzPo7rDaudoHcU50RnHSxpoCMqet9Xnq--XPxrMwNzAG2u~EeLPazVSs97Cdsc2l9bVrEs5wcjzt4Qt70pI5ndtQbhbStM6RSQATLSrjOLn6B6-Xc9kN5t0ZbReQRMV8jDftDsHDQ__"
 tar -xzf cellranger-8.0.1.tar.gz
+rm cellranger-8.0.1.tar.gz
+mkdir -p software
+mv cellranger-8.0.1 software/
 
 
 # Download human reference
 curl -O "https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2024-A.tar.gz"
 tar -xzf refdata-gex-GRCh38-2024-A.tar.gz
+rm refdata-gex-GRCh38-2024-A.tar.gz

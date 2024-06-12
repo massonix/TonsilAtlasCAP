@@ -4,19 +4,19 @@
 
 # Get list of fastq files and subset to scRNA-seq
 PATH_TSV="https://www.ebi.ac.uk/ena/portal/api/filereport?accession=PRJEB75429&result=read_run&fields=study_accession,sample_accession,experiment_accession,run_accession,tax_id,scientific_name,fastq_ftp,submitted_ftp,sra_ftp,bam_ftp&format=tsv&download=true&limit=0"
-wget -O fastq_list_tonsil_atlas.tsv "$PATH_TSV"
-grep "scRNA-seq" fastq_list_tonsil_atlas.tsv > fastq_list_tonsil_atlas_scRNA.tsv
+wget -O data/fastq_list_tonsil_atlas.tsv "$PATH_TSV"
+grep "scRNA-seq" data/fastq_list_tonsil_atlas.tsv > data/fastq_list_tonsil_atlas_scRNA.tsv
 
 
 # Create metadata from fastqs
-cut -f8 fastq_list_tonsil_atlas_scRNA.tsv | cut -d'/' -f6 | cut -d';' -f1 > fastq_names_scRNA.txt
-echo "technology,donor_id,subproject,gem_id,library_id,library_type,lane,read" > tonsil_atlas_fastq_metadata.csv
-sed 's/\.fastq\.gz//g' fastq_names_scRNA.txt | sed 's/\./,/g' >> tonsil_atlas_fastq_metadata.csv
+cut -f8 data/fastq_list_tonsil_atlas_scRNA.tsv | cut -d'/' -f6 | cut -d';' -f1 > data/fastq_names_scRNA.txt
+echo "technology,donor_id,subproject,gem_id,library_id,library_type,lane,read" > data/tonsil_atlas_fastq_metadata.csv
+sed 's/\.fastq\.gz//g' data/fastq_names_scRNA.txt | sed 's/\./,/g' >> data/tonsil_atlas_fastq_metadata.csv
 
 
 # Download feature barcoding
 URL_HASHING_METADATA=https://www.ebi.ac.uk/biostudies/files/E-MTAB-13687/cell_hashing_metadata.csv
-wget -O cell_hashing_metadata.csv "$URL_HASHING_METADATA"
+wget -O data/cell_hashing_metadata.csv "$URL_HASHING_METADATA"
 
 
 # Download cellranger 8.0.1

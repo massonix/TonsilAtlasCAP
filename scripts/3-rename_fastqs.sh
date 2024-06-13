@@ -35,7 +35,7 @@ create_symlinks() {
 # Main script logic
 if [ "$library_type" == "not_hashed" ]; then
     echo "Library type is not hashed"
-    create_symlinks "${working_dir}/data/fastq/$gem_id" "${working_dir}/data/fastq/$gem_id" ""
+    create_symlinks "${working_dir}/data/fastq/$gem_id" "${working_dir}/data/fastq/$gem_id/symlinks" ""
 else
     echo "Library type is hashed"
     

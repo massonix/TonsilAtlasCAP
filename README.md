@@ -30,7 +30,7 @@ We recommend parallelize the previous script across all gem_ids using a high per
 For a SLURM-based cluster we can run it as follows:
 
 ```{bash}
-gem_ids=$(cat data/tonsil_atlas_fastq_metadata.csv | grep -v technology | cut -d, -f4)
+gem_ids=$(cat data/tonsil_atlas_fastq_metadata.csv | grep -v technology | cut -d, -f4 | sort | uniq)
 mkdir -p log
 for gem_id in $gem_ids; do
     echo $gem_id

@@ -49,8 +49,8 @@ else
     mkdir -p data/libraries_csvs
     cat <<EOL > "${working_dir}/data/libraries_csvs/${gem_id}_libraries.csv"
 fastqs,sample,library_type
-${working_dir}/data/fastq/cDNA/,${gem_id},Gene Expression
-${working_dir}/data/fastq/hto/,${gem_id},Antibody Capture
+${working_dir}/data/fastq/${gem_id}/cDNA/,${gem_id},Gene Expression
+${working_dir}/data/fastq/${gem_id}/hto/,${gem_id},Antibody Capture
 EOL
 
     # Create feature_reference.csv

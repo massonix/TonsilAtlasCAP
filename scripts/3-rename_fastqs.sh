@@ -4,7 +4,7 @@
 # Get library type for that gem_id 
 gem_id=$1
 working_dir=$(pwd)
-library_type=$(grep $gem_id data/tonsil_atlas_fastq_metadata.csv | cut -d, -f6 | head -n1)
+library_type=$(grep $gem_id $working_dir/data/tonsil_atlas_fastq_metadata.csv | cut -d, -f6 | head -n1)
 
 # Function to create symbolic links with cellranger-friendly names
 create_symlinks() {
@@ -15,14 +15,14 @@ create_symlinks() {
     mkdir -p "$output_dir"
     declare -A lane_dict
     counter=1
-    pair_ids=$(ls "$fastq_dir" | grep "$suffix" | cut -d'.' -f7 | sort | uniq)
+    pair_ids=$(ls "$fastq_dir" | grep "fastq.gz" | grep "$suffix" | cut -d'.' -f7 | sort | uniq)
 
     for pair_id in $pair_ids; do
         lane_dict[$pair_id]=$counter
         ((counter++))
     done
 
-    for fastq in $(ls "$fastq_dir" | grep "$suffix"); do
+    for fastq in $(ls "$fastq_dir" | grep "fastq.gz" | grep "$suffix"); do
         read=$(echo $fastq | cut -d'.' -f8)
         pair_id=$(echo $fastq | cut -d'.' -f7)
         lane=${lane_dict[$pair_id]}
@@ -35,19 +35,19 @@ create_symlinks() {
 # Main script logic
 if [ "$library_type" == "not_hashed" ]; then
     echo "Library type is not hashed"
-    create_symlinks "data/fastq/$gem_id" "data/fastq/$gem_id" ""
+    create_symlinks "${working_dir}/data/fastq/$gem_id" "${working_dir}/data/fastq/$gem_id" ""
 else
     echo "Library type is hashed"
     
     # Rename fastqs cDNA
-    create_symlinks "data/fastq/$gem_id" "data/fastq/$gem_id/cDNA" "cdna"
+    create_symlinks "${working_dir}/data/fastq/$gem_id" "${working_dir}/data/fastq/$gem_id/cDNA" "cdna"
     
     # Rename fastqs HTO
-    create_symlinks "data/fastq/$gem_id" "data/fastq/$gem_id/hto" "hto"
+    create_symlinks "${working_dir}/data/fastq/$gem_id" "${working_dir}/data/fastq/$gem_id/hto" "hto"
     
     # Create libraries.csv file
     mkdir -p data/libraries_csvs
-    cat <<EOL > "data/libraries_csvs/${gem_id}_libraries.csv"
+    cat <<EOL > "${working_dir}/data/libraries_csvs/${gem_id}_libraries.csv"
 fastqs,sample,library_type
 ${working_dir}/data/fastq/cDNA/,${gem_id},Gene Expression
 ${working_dir}/data/fastq/hto/,${gem_id},Antibody Capture
@@ -55,7 +55,7 @@ EOL
 
     # Create feature_reference.csv
     mkdir -p data/feature_reference_csvs
-    head -n1 data/cell_hashing_metadata.csv | cut -d, -f3-8 > "data/feature_reference_csvs/${gem_id}_feature_reference.csv"
-    grep $gem_id data/cell_hashing_metadata.csv | cut -d, -f3-8 >> "data/feature_reference_csvs/${gem_id}_feature_reference.csv"
+    head -n1 data/cell_hashing_metadata.csv | cut -d, -f3-8 > "${working_dir}/data/feature_reference_csvs/${gem_id}_feature_reference.csv"
+    grep $gem_id data/cell_hashing_metadata.csv | cut -d, -f3-8 >> "${working_dir}/data/feature_reference_csvs/${gem_id}_feature_reference.csv"
 fi
 

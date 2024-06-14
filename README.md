@@ -63,3 +63,25 @@ for gem_id in $gem_ids; do
 done
 ```
 
+
+Step 5: Run cellranger count
+
+For one gem_id:
+
+```{bash}
+gem_id=jb6vuao4_g4vi9ur0
+bash scripts/4-run_cellranger_count.sh $gem_id
+```
+
+To parallelize it across all gem_ids in a SLURM-based cluster:
+
+```{bash}
+gem_ids=$(cat data/tonsil_atlas_fastq_metadata.csv | grep -v technology | cut -d, -f4 | sort | uniq)
+for gem_id in $gem_ids; do
+    echo $gem_id
+    sbatch -J $gem_id --error="log/${gem_id}_run_cellranger.err" --output="log/${gem_id}_run_cellranger.log" -c 12 --time=16:00:00 --mem=250G --wrap="
+        echo [$(date '+%Y-%m-%d %T')] starting job on $HOSTNAME
+        bash scripts/4-run_cellranger_count.sh $gem_id
+        echo [$(date '+%Y-%m-%d %T')] job finished"
+done
+```

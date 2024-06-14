@@ -5,21 +5,21 @@ tonsil atlas from [ArrayExpress](https://www.ebi.ac.uk/biostudies/arrayexpress/s
 expression matrices. We will then upload the resulting matrix to the Cell Annotation Platform (CAP).
 
 
-Step 1: clone this repository
+## Step 1: clone this repository
 
 ```{bash}
 git clone https://github.com/massonix/TonsilAtlasCAP.git
 ```
 
 
-Step 2: download list of fastq files, relevant metadata, cellranger and human genome reference
+## Step 2: download list of fastq files, relevant metadata, cellranger and human genome reference
 
 ```{bash}
 bash scripts/1-download_software_and_metadata.sh
 ```
 
 
-Step 3: download fastq files. For one sample (gem_id, Gel Bead in-emulsion):
+## Step 3: download fastq files. For one sample (gem_id, Gel Bead in-emulsion)
 
 ```{bash}
 gem_id=jb6vuao4_g4vi9ur0
@@ -41,7 +41,7 @@ for gem_id in $gem_ids; do
 done
 ```
 
-Step 4: create symbolic links to fastq files with cellranger-compatible names (see [this webpage](https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs)):
+## Step 4: create symbolic links to fastq files with cellranger-compatible names (see [this webpage](https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs)):
 
 For one gem_id:
 
@@ -64,7 +64,7 @@ done
 ```
 
 
-Step 5: Run cellranger count
+## Step 5: Run cellranger count
 
 For one gem_id:
 

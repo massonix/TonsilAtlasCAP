@@ -41,13 +41,27 @@ for gem_id in $gem_ids; do
 done
 ```
 
-## Step 4: create symbolic links to fastq files with cellranger-compatible names (see [this webpage](https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs)):
+
+## Step 4: Test that all fastq files were downloaded successfully
+
+```{bash}
+bash scripts/3-test_fastq_downloads.sh
+```
+
+This script will create the file data/test_fastq_downloads.txt, which will help find any empty or missing fastqs:
+
+```{bash}
+grep missing data/test_fastq_downloads.txt
+```
+
+
+## Step 5: create symbolic links to fastq files with cellranger-compatible names (see [this webpage](https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-specifying-fastqs)):
 
 For one gem_id:
 
 ```{bash}
 gem_id=jb6vuao4_g4vi9ur0
-bash scripts/3-rename_fastqs.sh $gem_id
+bash scripts/4-rename_fastqs.sh $gem_id
 ```
 
 To parallelize it across all gem_ids in a SLURM-based cluster:
@@ -58,19 +72,19 @@ for gem_id in $gem_ids; do
     echo $gem_id
     sbatch -J $gem_id --error="log/${gem_id}_symlinks_fastq.err" --output="log/${gem_id}_symlinks_fastq.log" -c 4 --time=00:30:00 --mem=30G --wrap="
         echo [$(date '+%Y-%m-%d %T')] starting job on $HOSTNAME
-        bash scripts/3-rename_fastqs.sh $gem_id $gem_id
+        bash scripts/4-rename_fastqs.sh $gem_id $gem_id
         echo [$(date '+%Y-%m-%d %T')] job finished"
 done
 ```
 
 
-## Step 5: Run cellranger count
+## Step 6: Run cellranger count
 
 For one gem_id:
 
 ```{bash}
 gem_id=jb6vuao4_g4vi9ur0
-bash scripts/4-run_cellranger_count.sh $gem_id
+bash scripts/5-run_cellranger_count.sh $gem_id
 ```
 
 To parallelize it across all gem_ids in a SLURM-based cluster:
@@ -79,15 +93,15 @@ To parallelize it across all gem_ids in a SLURM-based cluster:
 gem_ids=$(cat data/tonsil_atlas_fastq_metadata.csv | grep -v technology | cut -d, -f4 | sort | uniq)
 for gem_id in $gem_ids; do
     echo $gem_id
-    sbatch -J $gem_id --error="log/${gem_id}_run_cellranger.err" --output="log/${gem_id}_run_cellranger.log" -c 12 --time=16:00:00 --mem=250G --wrap="
+    sbatch -J $gem_id --error="log/${gem_id}_run_cellranger.err" --output="log/${gem_id}_run_cellranger.log" -c 12 --time=08:00:00 --mem=250G --wrap="
         echo [$(date '+%Y-%m-%d %T')] starting job on $HOSTNAME
-        bash scripts/4-run_cellranger_count.sh $gem_id
+        bash scripts/5-run_cellranger_count.sh $gem_id
         echo [$(date '+%Y-%m-%d %T')] job finished"
 done
 ```
 
 
-## Step 6: Check that all runs finished correctly
+## Step 7: Check that all runs finished correctly
 
 ```{bash}
 for gem_id in $(ls data/outs_cellranger/); do

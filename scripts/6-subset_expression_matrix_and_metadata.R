@@ -29,6 +29,10 @@ features <- read_tsv(
   glue("{outs_dir}/features.tsv.gz"),
   col_names = c("gene_id", "gene_symbol", "gene_type")
 )
+features <- features[features$gene_type == "Gene Expression", ]
+if (!all(features$gene_id == rownames(mat))){
+  stop("Features do not match!")
+}
 
 
 # Download SingleCellExperiment object of all tonsillar cell and filter out multiome

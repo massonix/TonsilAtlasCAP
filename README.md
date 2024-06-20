@@ -112,3 +112,37 @@ for gem_id in $(ls data/fastq/); do
   fi
 done > data/test_cellranger_runs_finished.txt
 ```
+
+## Step 8: Keep only cells that we included in the final tonsil atlas
+
+We use the [HCATonsilData](https://bioconductor.org/packages/release/data/experiment/html/HCATonsilData.html) package to get the cell barcodes.
+
+For one gem_id:
+
+```{bash}
+# module load R/4.3.1
+Rscript scripts/6-subset_expression_matrix_and_metadata.R altbaco5_45sf3wul
+```
+
+For all gem_ids in a slurm-based cluster:
+
+```{bash}
+gem_ids=$(cat data/tonsil_atlas_fastq_metadata.csv | grep -v technology | cut -d, -f4 | sort | uniq)
+for gem_id in $gem_ids; do
+    echo $gem_id
+    sbatch -J $gem_id --error="log/${gem_id}_subset_matrix.err" --output="log/${gem_id}_subset_matrix.log" -c 12 --time=01:00:00 --mem=100G --wrap="
+        echo [$(date '+%Y-%m-%d %T')] starting job on $HOSTNAME
+        # module load R/4.3.1
+        Rscript scripts/6-subset_expression_matrix_and_metadata.R $gem_id
+        echo [$(date '+%Y-%m-%d %T')] job finished"
+done
+```
+
+
+## Step 9: Create SingleCellExperiment and AnnData objects
+
+Again, we get the cell metadata from HCATonsilData
+
+```{bash}
+Rscript scripts/7-create_h5ad_object.R
+```

@@ -1,5 +1,5 @@
 # This script loads the expression matrix produced by cellranger count and
-# subsets it to the high-quality cells in the tonsil atlas for a given GEM id
+# subsets it to the high-quality cells in the tonsil atlas
 
 
 # Load packages
@@ -13,18 +13,42 @@ library(glue)
 
 
 # Read data
-gem_id <- "y7qn780g_p6jkgk63"
-mat <- Read10X(here("data/filtered_feature_bc_matrix"), gene.column = 1)
-colnames(mat) <- glue("{gem_id}_{colnames(mat)}")
-features <- read_tsv(
-    here("data/filtered_feature_bc_matrix/features.tsv.gz"),
-  col_names = c("gene_id", "gene_symbol", "gene_type")
-)
+gem_ids <- list.dirs(here("data/outs_cellranger"), recursive = FALSE, full.names = FALSE)
+cellranger_outs <- map(gem_ids, \(gem_id) {
+  print(gem_id)
+  outs_dir <- here(glue("data/outs_cellranger/{gem_id}/outs/raw_filtered_feature_bc_matrix"))
+  mat <- Read10X(outs_dir, gene.column = 1)
+  if (class(mat) == "list") {
+    mat <- mat$`Gene Expression`
+  }
+  colnames(mat) <- glue("{gem_id}_{colnames(mat)}")
+  features <- read_tsv(
+    glue("{outs_dir}/features.tsv.gz"),
+    col_names = c("gene_id", "gene_symbol", "gene_type")
+  )
+  out <- list(mat = mat, features = features)
+  out
+})
+names(cellranger_outs) <- gem_ids
 
 
 # Download SingleCellExperiment object of all tonsillar cell and filter out multiome
 tonsil <- HCATonsilData(assayType = "RNA", cellType = "All")
 tonsil <- tonsil[, tonsil$assay != "multiome"]
+
+
+# Check that all cells in SingleCellExperiment object for that gem_id are in the
+# expression matrix
+mats_sub <- map(gem_ids, \(gem_id) {
+  tonsil_sub <- tonsil[, tonsil$gem_id == gem_id]
+  mat <- cellranger_outs[[gem_id]]$mat
+  if (all(colnames(tonsil_sub) %in% colnames(mat))) {
+    mat_sub <- mat[, colnames(tonsil_sub)]
+  } else {
+    stop("Cell barcodes do not match!")
+  }
+  mat_sub
+})
 
 
 # Add Azimuth annotation
@@ -34,14 +58,6 @@ azimuth_annot <- read_csv(here("data/azimuth_annotations.csv"), col_names = TRUE
 colnames(azimuth_annot) <- c("barcode", "azimuth.celltype.l1", "azimuth.celltype.l2")
 
 
-# Check that all cells in SingleCellExperiment object for that gem_id are in the
-# expression matrix
-tonsil_sub <- tonsil[, tonsil$gem_id == gem_id]
-if (all(colnames(tonsil_sub) %in% colnames(mat))) {
-  mat_sub <- mat[, colnames(tonsil_sub)]
-} else {
-  stop("Cell barcodes do not match!")
-}
 
 
 # Subset metadata

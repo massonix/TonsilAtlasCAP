@@ -104,7 +104,7 @@ done
 ## Step 7: Check that all runs finished correctly
 
 ```{bash}
-for gem_id in $(ls data/outs_cellranger/); do
+for gem_id in $(ls data/fastq/); do
   if [ -d "data/outs_cellranger/$gem_id/outs" ]; then
     echo "${gem_id},TRUE"
   else

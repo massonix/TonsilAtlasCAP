@@ -23,6 +23,14 @@ se <- as.Seurat(sce)
 se <- FindVariableFeatures(se)
 se <- ScaleData(se)
 se <- RunPCA(se)
+se <- RunHarmony(
+    se,
+    group.by.vars = "donor_id",
+    reduction.use = "pca",
+    dims.use = 1:30
+)
+se <- RunUMAP(se, dims = 1:30, reduction = "harmony")
 
 
 # Save
+saveRDS(se, here("data/processed_objects/TonsilAtlasSeuratProcessed.rds"))

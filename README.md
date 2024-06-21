@@ -141,7 +141,7 @@ done
 
 ## Step 9: Create SingleCellExperiment and AnnData objects
 
-Again, we get the cell metadata from HCATonsilData
+Again, we get the cell metadata from HCATonsilData.
 
 ```{bash}
 Rscript scripts/7-create_h5ad_object.R

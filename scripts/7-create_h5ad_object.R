@@ -4,6 +4,7 @@
 
 # Load packages
 library(Seurat)
+library(HCATonsilData)
 library(zellkonverter)
 library(SingleCellExperiment)
 library(here)

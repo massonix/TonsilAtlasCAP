@@ -54,6 +54,10 @@ colnames(azimuth_annot) <- c("barcode", "azimuth.celltype.l1", "azimuth.celltype
 combined_matrix <- combined_matrix[, colnames(tonsil)]
 coldata <- as.data.frame(colData(tonsil))
 coldata <- left_join(coldata, azimuth_annot, by = "barcode")
+coldata$tissue <- "palatine tonsil"
+coldata$disease <- "cause_for_tonsillectomy"
+coldata$organism <- "Homo sapiens"
+coldata$assay <- "10x 3' v3"
 rownames(coldata) <- coldata$barcode
 rowdata <- read_tsv(
     here("data/subsetted_matrices/altbaco5_45sf3wul/genes.tsv"),
@@ -61,10 +65,13 @@ rowdata <- read_tsv(
 )
 rowdata <- as.data.frame(rowdata)
 rownames(rowdata) <- rowdata$ensembl_id
+reduced_dims <- reducedDims(tonsil)
+names(reduced_dims) <- c("X_pca", "X_umap", "X_harmony")
 sce <- SingleCellExperiment(
     list(counts = combined_matrix),
     colData = coldata,
     rowData = rowdata,
+    reducedDims = reduced_dims,
     metadata = list(
         Study = "10.1016/j.immuni.2024.01.006",
         ArrayExpress = "E-MTAB-13687",
@@ -81,4 +88,3 @@ dir.create(here("data/processed_objects"))
 saveRDS(sce, here("data/processed_objects/TonsilAtlasSCE.rds"))
 writeH5AD(sce, file = here("data/processed_objects/TonsilAtlas.h5ad"))
 
-          
